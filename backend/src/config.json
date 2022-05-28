@@ -1,5 +1,6 @@
 {
     "port": 5000,
     "databaseName": "database",
-    "imagesTableName": "images"
+    "imagesTableName": "images",
+    "codeLength": 10
 }

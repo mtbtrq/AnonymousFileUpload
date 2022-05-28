@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-const config = require("./config.json")
+const config = require("./config.json");
 
 function App() {
     useEffect(() => {
@@ -19,8 +19,8 @@ function App() {
 
         const uploadImage = async () => {
             if (imageStringUnformatted) {
-                const statusEl = document.getElementById("statusEl")
-                statusEl.textContent = "Uploading..."
+                const statusEl = document.getElementById("statusEl");
+                statusEl.textContent = "Uploading...";
                 const imageStringFormatted = imageStringUnformatted.replace("data:", "").replace(/^.+,/, "");
             
                 const options = {
@@ -34,15 +34,16 @@ function App() {
                 await fetch(`${config.apiURL}/upload`, options).then(async response => {
                     const jsonResponse = await response.json();
                     if (jsonResponse.success) {
-                        statusEl.textContent = "Uploaded!"
+                        statusEl.textContent = `Uploaded! \nImage URL: ${config.apiURL}/${jsonResponse.code}`
                     } else {
+                        console.log(jsonResponse.cause)
                         statusEl.textContent = jsonResponse.cause;
-                    }
-                })
-            }
-        }
+                    };
+                });
+            };
+        };
         document.getElementById("submitButtonEl").addEventListener("click", uploadImage);
-    }, [])
+    }, []);
 
     return (
         <div id="mainDiv">
