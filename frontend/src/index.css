@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Sora:wght@400;600&display=swap');
+
+* {
+	font-family: "Sora";
+}
+
+body {
+	background-color: #2B2D42;
+	color: #EDF2F4;
+}
+
+#mainDiv {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	align-items: center;
+}
+
+#chosenImage {
+	margin-top: 50px;
+}
+
+#fileEl {
+	outline: none;
+}
+
+#submitButtonEl {
+	border-radius: 5px;
+	outline: none;
+	border: 2px solid #F76F8E;
+}
+
+#submitButtonEl:hover {
+	background-color: #F76F8E;
+	transition: 0.2s;
+}
+
+#instructionsEl {
+	margin-top: 40px;
+}
