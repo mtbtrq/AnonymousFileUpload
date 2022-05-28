@@ -6,7 +6,7 @@ const config = require("./config.json");
 const db = new require("better-sqlite3")(`${config["databaseName"]}.db`);
 
 const port = process.env.PORT || config.port;
-app.use(bodyParser.json({ limit: "15mb" }));
+app.use(bodyParser.json({ limit: config.imageSizeLimit }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 db.prepare(`CREATE TABLE IF NOT EXISTS ${config.imagesTableName} (imagebase64Code text, code text)`).run();
