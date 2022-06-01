@@ -3,5 +3,5 @@
     "databaseName": "database",
     "imagesTableName": "images",
     "codeLength": 10,
-    "imageSizeLimit": "15mb"
+    "imageSizeLimit": "5mb"
 }
