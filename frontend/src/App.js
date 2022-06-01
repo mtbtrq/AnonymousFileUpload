@@ -41,8 +41,9 @@ function App() {
                     await fetch(`${config.apiURL}/upload`, options).then(async response => {
                         const jsonResponse = await response.json();
                         if (jsonResponse.success) {
+                            setStats();
                             const code = jsonResponse.code
-                            statusEl.innerHTML = `Uploaded! Image URL: <a href="${config.apiURL}/${code}" target="_blank">${config.apiURL}/${code}</a>`
+                            statusEl.innerHTML = `Uploaded! Image URL: <a href="${config.apiURL}/i/${code}" target="_blank">${config.apiURL}/i/${code}</a>`
                         } else {
                             console.log(jsonResponse)
                             statusEl.textContent = "Something went wrong! Contact Mutayyab on discord: Mutyyab.#4275";

@@ -12,6 +12,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 let imagesUploaded = 0;
 let imageSizeUploaded = 0;
 
+app.get("/", (req, res) => { return res.redirect(config.incorrectCodeRedirectURL) });
+
 app.get("/stats", (req, res) => {
     return res.send({
         "imagesUploaded": imagesUploaded,
@@ -54,10 +56,8 @@ function getCode() {
     return result;
 };
 
-app.get("/:code", (req, res) => {
+app.get("/i/:code", (req, res) => {
     const code = req.params.code;
-
-    if (code == "stats" || code == " " || code == "" || !code) return;
     
     const imagesData = db.prepare(`SELECT * FROM ${config.imagesTableName} WHERE code = ?`).all(code);
     
