@@ -72,7 +72,7 @@ function App() {
     return (
         <div id="mainDiv">
             <h1 id="title">Anonymously Upload Images</h1>
-            <p>This service doesn't store any of your data and is fully open source.</p>
+            <p>This service doesn't store any of your personal data and is fully open source.</p>
             <p id="statsEl"></p>
 
             <p id="instructionsEl">Only image files (below 5 MB) are allowed!</p>
