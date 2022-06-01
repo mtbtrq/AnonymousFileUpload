@@ -2,11 +2,28 @@
 
 * {
 	font-family: "Sora";
+	margin: 3px;
 }
 
 body {
 	background-color: #2B2D42;
 	color: #EDF2F4;
+}
+
+#title {
+	margin-top: 20px;
+	margin-bottom: 40px;
+}
+
+a:any-link {
+	color: #EDF2F4;
+	text-decoration: none;
+}
+
+a:any-link:hover {
+	color: #F76F8E;
+	transition: 0.2s;
+	text-decoration: underline;
 }
 
 #statusEl {
@@ -41,4 +58,5 @@ body {
 
 #instructionsEl {
 	margin-top: 40px;
+	font-weight: bold;
 }

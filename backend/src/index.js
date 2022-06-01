@@ -9,15 +9,29 @@ const port = process.env.PORT || config.port;
 app.use(bodyParser.json({ limit: config.imageSizeLimit }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
+let imagesUploaded = 0;
+let imageSizeUploaded = 0;
+
+app.get("/stats", (req, res) => {
+    return res.send({
+        "imagesUploaded": imagesUploaded,
+        "imageSizeUploaded": imageSizeUploaded
+    });
+});
+
 db.prepare(`CREATE TABLE IF NOT EXISTS ${config.imagesTableName} (imagebase64Code text, code text)`).run();
 
 app.post("/upload", (req, res) => {
     try {
         const image = req.body.image;
+        const fileSize = req.body.size;
 
-        const code = getCode()
+        const code = getCode();
 
         db.prepare(`INSERT INTO ${config.imagesTableName} VALUES (?, ?)`).run(image, code);
+
+        imagesUploaded += 1;
+        if (!isNaN(fileSize)) { imageSizeUploaded += (fileSize/1_000_000) }
 
         return res.send({
             success: true,
@@ -26,7 +40,7 @@ app.post("/upload", (req, res) => {
     } catch (err) {
         return res.send({
             success: false,
-            cause: err
+            cause: err.message
         });
     };
 });
