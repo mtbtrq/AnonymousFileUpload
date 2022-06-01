@@ -58,6 +58,8 @@ app.get("/", (req, res) => { return res.redirect(config.incorrectCodeRedirectURL
 
 app.get("/:code", (req, res) => {
     const code = req.params.code;
+
+    if (code == "stats" || code == " " || code == "" || !code) return;
     
     const imagesData = db.prepare(`SELECT * FROM ${config.imagesTableName} WHERE code = ?`).all(code);
     
