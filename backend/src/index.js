@@ -24,7 +24,18 @@ app.get("/stats", (req, res) => {
 
 db.prepare(`CREATE TABLE IF NOT EXISTS ${config.imagesTableName} (imagebase64Code text, code text)`).run();
 
-app.post("/upload", (req, res) => {
+const limiter = require('express-rate-limit').rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 50,
+    standardHeaders: true,
+    message: {
+        success: false,
+        cause: "You're sending too many requests. Please try again in a while."
+    },
+    statusCode: 200
+});
+
+app.post("/upload", limiter, (req, res) => {
     try {
         const image = req.body.image;
         const fileSize = req.body.size;

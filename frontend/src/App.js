@@ -42,16 +42,21 @@ function App() {
                         const jsonResponse = await response.json();
                         if (jsonResponse.success) {
                             setStats();
-                            const code = jsonResponse.code
+                            const code = jsonResponse.code;
                             statusEl.innerHTML = `Uploaded! Image URL: <a href="${config.apiURL}/i/${code}" target="_blank">${config.apiURL}/i/${code}</a>`
+                        } else if (jsonResponse.cause === "You're sending too many requests. Please try again in a while.") {
+                            return statusEl.textContent = "You're sending too many requests. Please try again in a while."
                         } else {
                             console.log(jsonResponse)
                             statusEl.textContent = "Something went wrong! Contact Mutayyab on discord: Mutyyab.#4275";
                         };
                     });
                 } catch (err) {
-                    console.log(err);
+                    statusEl.textContent = "Something went wrong!"
                 };
+                document.getElementById("chosenImage").src = "";
+                imageStringUnformatted = "";
+                document.getElementById("fileEl").value = ""
             };
         };
         document.getElementById("submitButtonEl").addEventListener("click", uploadImage);
@@ -63,7 +68,8 @@ function App() {
                     document.getElementById("statsEl").textContent = `${jsonResponse.imagesUploaded} image(s) uploaded with a total file size of ${(jsonResponse.imageSizeUploaded).toFixed(2)} MB.`
                 });
             } catch (err) {
-                return console.log(err)
+                document.getElementById("statusEl").textContent = "Something went wrong! Contact Mutayyab on discord: Mutyyab.#4275";
+                return console.log(err);
             };
         };
         setStats();
