@@ -45,7 +45,7 @@ app.get("/:code", (req, res) => {
     
     const imagesData = db.prepare(`SELECT * FROM ${config.imagesTableName} WHERE code = ?`).all(code);
     
-    if (!(imagesData.length > 0)) { return res.send("Invalid Code!") };
+    if (!(imagesData.length > 0)) { return res.redirect(config.incorrectCodeRedirectURL) };
 
     const imageCode = imagesData[0]["imagebase64Code"];
     
