@@ -25,8 +25,8 @@ app.get("/stats", (req, res) => {
 db.prepare(`CREATE TABLE IF NOT EXISTS ${config.imagesTableName} (imagebase64Code text, code text)`).run();
 
 const limiter = require('express-rate-limit').rateLimit({
-    windowMs: 10 * 60 * 1000,
-    max: 50,
+    windowMs: config.rateLimitTimeMilliseconds,
+    max: config.requestsPerTime,
     standardHeaders: true,
     message: {
         success: false,
