@@ -9,6 +9,10 @@ body {
 	color: #EDF2F4;
 }
 
+#statusEl {
+	font-weight: bold;
+}
+
 #mainDiv {
 	display: flex;
 	flex-direction: column;

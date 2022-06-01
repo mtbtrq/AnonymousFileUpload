@@ -7,6 +7,10 @@ function App() {
         const setImage = () => {
             const file = document.getElementById("fileEl")['files'][0];
             
+            if (file.size >= 5000000) {
+                return document.getElementById("statusEl").textContent = "Please select an image that is lighter than 5 MB.";
+            };
+            
             var reader = new FileReader();
 
             reader.onload = () => {
@@ -31,15 +35,19 @@ function App() {
                     body: JSON.stringify({image: imageStringFormatted})
                 };
     
-                await fetch(`${config.apiURL}/upload`, options).then(async response => {
-                    const jsonResponse = await response.json();
-                    if (jsonResponse.success) {
-                        statusEl.textContent = `Uploaded! \nImage URL: ${config.apiURL}/${jsonResponse.code}`
-                    } else {
-                        console.log(jsonResponse.cause)
-                        statusEl.textContent = jsonResponse.cause;
-                    };
-                });
+                try {
+                    await fetch(`${config.apiURL}/upload`, options).then(async response => {
+                        const jsonResponse = await response.json();
+                        if (jsonResponse.success) {
+                            statusEl.textContent = `Uploaded! \nImage URL: ${config.apiURL}/${jsonResponse.code}`
+                        } else {
+                            console.log(jsonResponse.cause)
+                            statusEl.textContent = jsonResponse.cause;
+                        };
+                    });
+                } catch (err) {
+                    console.log(err);
+                };
             };
         };
         document.getElementById("submitButtonEl").addEventListener("click", uploadImage);
