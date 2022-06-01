@@ -14,7 +14,7 @@ function App() {
                 document.getElementById("chosenImage").src = imageStringUnformatted;
             }
             reader.readAsDataURL(file);
-        }
+        };
         document.getElementById("fileEl").addEventListener("change", setImage);
 
         const uploadImage = async () => {
