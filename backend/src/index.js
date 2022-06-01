@@ -13,6 +13,7 @@ let imagesUploaded = 0;
 let imageSizeUploaded = 0;
 
 app.get("/", (req, res) => { return res.redirect(config.incorrectCodeRedirectURL) });
+app.get("/i", (req, res) => { return res.redirect(config.incorrectCodeRedirectURL) });
 
 app.get("/stats", (req, res) => {
     return res.send({
