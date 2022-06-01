@@ -59,7 +59,7 @@ function App() {
             try {
                 await fetch(`${config.apiURL}/stats`).then(async response => {
                     const jsonResponse = await response.json();
-                    document.getElementById("statsEl").textContent = `${jsonResponse.imagesUploaded} images uploaded with a total file size of ${(jsonResponse.imageSizeUploaded).toFixed(2)} MB.`
+                    document.getElementById("statsEl").textContent = `${jsonResponse.imagesUploaded} image(s) uploaded with a total file size of ${(jsonResponse.imageSizeUploaded).toFixed(2)} MB.`
                 });
             } catch (err) {
                 return console.log(err)

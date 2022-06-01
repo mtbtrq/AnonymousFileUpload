@@ -54,6 +54,8 @@ function getCode() {
     return result;
 };
 
+app.get("/", (req, res) => { return res.redirect(config.incorrectCodeRedirectURL) })
+
 app.get("/:code", (req, res) => {
     const code = req.params.code;
     
