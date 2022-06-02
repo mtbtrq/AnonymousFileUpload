@@ -3,6 +3,23 @@ const config = require("./config.json");
 
 function App() {
     useEffect(() => {
+        const setPreviousURLs = () => {
+            if (localStorage.getItem("urls")) {
+                document.getElementById("yourPreviouslyUploadedImagesText").classList.remove("hidden");
+                const previousURLs = JSON.parse(localStorage.getItem("urls"));
+                if (previousURLs.length > 5) {
+                    previousURLs.splice(0, previousURLs.length - 5)
+                };
+                const previousLinkUlEl = document.getElementById("linksUlEl");
+                for (let url of previousURLs) {
+                    const newLi = document.createElement("li");
+                    newLi.innerHTML = `<a href="${url}">${url}</a>`;
+                    previousLinkUlEl.appendChild(newLi);
+                };
+            };
+        };
+        setPreviousURLs();
+
         let imageStringUnformatted;
         let imageSize;
         const setImage = () => {
@@ -17,8 +34,10 @@ function App() {
 
             reader.onload = () => {
                 imageStringUnformatted = reader.result;
-                document.getElementById("chosenImage").src = imageStringUnformatted;
-            }
+                const chosenImageEl = document.getElementById("chosenImage")
+                chosenImageEl.src = imageStringUnformatted;
+                chosenImageEl.classList.remove("hidden")
+            };
             reader.readAsDataURL(file);
         };
         document.getElementById("fileEl").addEventListener("change", setImage);
@@ -41,9 +60,26 @@ function App() {
                     await fetch(`${config.apiURL}/upload`, options).then(async response => {
                         const jsonResponse = await response.json();
                         if (jsonResponse.success) {
+                            const url = `${config.apiURL}/i/${jsonResponse.code}`
+                            statusEl.textContent = "";
+                            document.getElementById("instructionsEl").innerHTML = `Uploaded! Image URL: <a href="${url}" target="_blank">${url}</a>`
                             setStats();
-                            const code = jsonResponse.code;
-                            statusEl.innerHTML = `Uploaded! Image URL: <a href="${config.apiURL}/i/${code}" target="_blank">${config.apiURL}/i/${code}</a>`
+
+                            if (!(localStorage.getItem("urls"))) {
+                                localStorage.setItem("urls", JSON.stringify([url]))
+                            } else {
+                                const previousURLs = JSON.parse(localStorage.getItem("urls"))
+                                previousURLs.push(url)
+                                console.log(previousURLs)
+                                localStorage.setItem("urls", JSON.stringify(previousURLs))
+                            };
+
+                            const previousLinkUlEl = document.getElementById("linksUlEl");
+                            const newLi = document.createElement("li");
+                            newLi.innerHTML = `<a href="${url}">${url}</a>`
+                            document.getElementById("yourPreviouslyUploadedImagesText").classList.remove("hidden")
+                            previousLinkUlEl.appendChild(newLi);
+
                         } else if (jsonResponse.cause === "You're sending too many requests. Please try again in a while.") {
                             return statusEl.textContent = "You're sending too many requests. Please try again in a while."
                         } else {
@@ -52,11 +88,15 @@ function App() {
                         };
                     });
                 } catch (err) {
+                    console.log(err)
                     statusEl.textContent = "Something went wrong!"
                 };
-                document.getElementById("chosenImage").src = "";
+
+                const chosenImage = document.getElementById("chosenImage");
+                chosenImage.src = "";
+                chosenImage.classList.add("hidden");
                 imageStringUnformatted = "";
-                document.getElementById("fileEl").value = ""
+                document.getElementById("fileEl").value = "";
             };
         };
         document.getElementById("submitButtonEl").addEventListener("click", uploadImage);
@@ -80,14 +120,23 @@ function App() {
             <h1 id="title">Anonymously Upload Images</h1>
             <p>This service doesn't store any of your personal data and is fully open source.</p>
             <p id="statsEl"></p>
+            
+            <br />
+            <p className="hidden" id="yourPreviouslyUploadedImagesText">Your previously uploaded images:</p>
+            <ul id="linksUlEl"></ul>
 
             <p id="instructionsEl">Only image files (below 5 MB) are allowed!</p>
             <p id="statusEl"></p>
+
             <br />
-            <input type="file" id="fileEl" accept="image/png, image/jpeg" title="Choose any PNG or JPEG file"/>
+            <label htmlFor="fileEl" id="customUploadStyle">
+                Upload File
+                <input type="file" id="fileEl" accept="image/png, image/jpeg" title="Choose any PNG or JPEG file"/>
+            </label>
             <br />
+
             <button id="submitButtonEl">Submit</button>
-            <img id="chosenImage" width="70%"/>
+            <img id="chosenImage" width="70%" alt="User's photograph selection" className='hidden'/>
         </div>
     );
 };

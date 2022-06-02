@@ -10,6 +10,10 @@ body {
 	color: #EDF2F4;
 }
 
+.hidden {
+	display: none;
+}
+
 #title {
 	margin-top: 20px;
 	margin-bottom: 40px;
@@ -43,6 +47,26 @@ a:any-link:hover {
 
 #fileEl {
 	outline: none;
+}
+
+#linksUlEl {
+	list-style-type: none;
+}
+
+#fileEl {
+	display: none;
+}
+
+#customUploadStyle {
+	border-radius: 5px;
+	outline: none;
+	border: 2px solid #F76F8E;
+	padding: 5px 5px;
+}
+
+#customUploadStyle:hover {
+	background-color: #F76F8E;
+	transition: 0.2s;
 }
 
 #submitButtonEl {
