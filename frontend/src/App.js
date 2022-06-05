@@ -9,6 +9,7 @@ function App() {
                 const previousURLs = JSON.parse(localStorage.getItem("urls"));
                 if (previousURLs.length > 5) {
                     previousURLs.splice(0, previousURLs.length - 5)
+                    localStorage.setItem("urls", JSON.stringify(previousURLs))
                 };
                 const previousLinkUlEl = document.getElementById("linksUlEl");
                 for (let url of previousURLs) {
