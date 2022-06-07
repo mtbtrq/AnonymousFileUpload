@@ -131,12 +131,12 @@ function App() {
 
             <br />
             <label htmlFor="fileEl" id="customUploadStyle">
-                Upload File
+                Choose File
                 <input type="file" id="fileEl" accept="image/png, image/jpeg" title="Choose any PNG or JPEG file"/>
             </label>
             <br />
 
-            <button id="submitButtonEl">Submit</button>
+            <button id="submitButtonEl">Upload</button>
             <img id="chosenImage" width="70%" alt="User's photograph selection" className='hidden'/>
         </div>
     );
