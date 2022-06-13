@@ -39,18 +39,21 @@ app.post("/upload", limiter, (req, res) => {
     try {
         const image = req.body.image;
         const fileSize = req.body.size;
+        const mimeType = req.body.mimeType;
 
-        const code = getCode();
+        if (mimeType == "data:image/jpeg;base64" || mimeType == "data:image/png;base64") {
+            const code = getCode();
 
-        db.prepare(`INSERT INTO ${config.imagesTableName} VALUES (?, ?)`).run(image, code);
-
-        imagesUploaded += 1;
-        if (!isNaN(fileSize)) { imageSizeUploaded += (fileSize/1_000_000) }
-
-        return res.send({
-            success: true,
-            code: code
-        });
+            db.prepare(`INSERT INTO ${config.imagesTableName} VALUES (?, ?)`).run(image, code);
+    
+            imagesUploaded += 1;
+            if (!isNaN(fileSize)) { imageSizeUploaded += (fileSize/1_000_000) }
+    
+            return res.send({
+                success: true,
+                code: code
+            });
+        } else { return res.send({ success: false, cause: "Please only upload JPEG or PNG files!" }) }
     } catch (err) {
         return res.send({
             success: false,
@@ -60,7 +63,7 @@ app.post("/upload", limiter, (req, res) => {
 });
 
 function getCode() {
-    var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var randomChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     var result = '';
     for ( var i = 0; i < config.codeLength; i++ ) {
         result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
@@ -69,7 +72,7 @@ function getCode() {
 };
 
 app.get("/i/:code", (req, res) => {
-    const code = req.params.code;
+    const code = (req.params.code).toLowerCase();
     
     const imagesData = db.prepare(`SELECT * FROM ${config.imagesTableName} WHERE code = ?`).all(code);
     
@@ -84,6 +87,23 @@ app.get("/i/:code", (req, res) => {
         'Content-Length': img.length
     });
     return res.end(img);
+});
+
+app.post("/truncate", (req, res) => {
+    const usersPassword = req.body.password;
+    const password = process.env.password || "admin123";
+
+    if (usersPassword === password) {
+        db.prepare(`DELETE from ${config.imagesTableName}`).run();
+        imageSizeUploaded = 0;
+        imagesUploaded = 0;
+        return res.send({ success: true });
+    } else {
+        return res.send({
+            success: false,
+            cause: "Incorrect password entered!"
+        });
+    };
 });
 
 app.listen(port, () => { console.log(`I'm listening to requests on port ${port}`) });

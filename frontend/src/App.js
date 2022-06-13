@@ -14,7 +14,7 @@ function App() {
                 const previousLinkUlEl = document.getElementById("linksUlEl");
                 for (let url of previousURLs) {
                     const newLi = document.createElement("li");
-                    newLi.innerHTML = `<a href="${url}">${url}</a>`;
+                    newLi.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
                     previousLinkUlEl.appendChild(newLi);
                 };
             };
@@ -47,50 +47,51 @@ function App() {
             if (imageStringUnformatted) {
                 const statusEl = document.getElementById("statusEl");
                 statusEl.textContent = "Uploading...";
-                const imageStringFormatted = imageStringUnformatted.replace("data:", "").replace(/^.+,/, "");
-            
+                const imageArray = imageStringUnformatted.split(",");
+
                 const options = {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({image: imageStringFormatted, size: imageSize})
+                    body: JSON.stringify({image: imageArray[1], size: imageSize, mimeType: imageArray[0]})
                 };
     
                 try {
                     await fetch(`${config.apiURL}/upload`, options).then(async response => {
                         const jsonResponse = await response.json();
                         if (jsonResponse.success) {
-                            const url = `${config.apiURL}/i/${jsonResponse.code}`
+                            const url = `${config.apiURL}/i/${jsonResponse.code}`;
                             statusEl.textContent = "";
-                            document.getElementById("instructionsEl").innerHTML = `Uploaded! Image URL: <a href="${url}" target="_blank">${url}</a>`
+                            document.getElementById("instructionsEl").innerHTML = `Uploaded! Image URL: <a href="${url}" target="_blank">${url}</a>`;
                             setStats();
 
                             if (!(localStorage.getItem("urls"))) {
-                                localStorage.setItem("urls", JSON.stringify([url]))
+                                localStorage.setItem("urls", JSON.stringify([url]));
                             } else {
-                                const previousURLs = JSON.parse(localStorage.getItem("urls"))
-                                previousURLs.push(url)
-                                console.log(previousURLs)
-                                localStorage.setItem("urls", JSON.stringify(previousURLs))
+                                const previousURLs = JSON.parse(localStorage.getItem("urls"));
+                                previousURLs.push(url);
+                                localStorage.setItem("urls", JSON.stringify(previousURLs));
                             };
 
                             const previousLinkUlEl = document.getElementById("linksUlEl");
                             const newLi = document.createElement("li");
-                            newLi.innerHTML = `<a href="${url}">${url}</a>`
+                            newLi.innerHTML = `<a href="${url}" target="_blank">${url}</a>`
                             document.getElementById("yourPreviouslyUploadedImagesText").classList.remove("hidden")
                             previousLinkUlEl.appendChild(newLi);
 
                         } else if (jsonResponse.cause === "You're sending too many requests. Please try again in a while.") {
-                            return statusEl.textContent = "You're sending too many requests. Please try again in a while."
+                            return statusEl.textContent = "You're sending too many requests. Please try again in a while.";
+                        } else if (jsonResponse.cause === "Please only upload JPEG or PNG files!") {
+                            return statusEl.textContent = "Please only upload JPEG or PNG files!";
                         } else {
-                            console.log(jsonResponse)
+                            console.log(jsonResponse);
                             statusEl.textContent = "Something went wrong! Contact Mutayyab on discord: Mutyyab.#4275";
                         };
                     });
                 } catch (err) {
-                    console.log(err)
-                    statusEl.textContent = "Something went wrong!"
+                    console.log(err);
+                    statusEl.textContent = "Something went wrong!";
                 };
 
                 const chosenImage = document.getElementById("chosenImage");
@@ -106,7 +107,7 @@ function App() {
             try {
                 await fetch(`${config.apiURL}/stats`).then(async response => {
                     const jsonResponse = await response.json();
-                    document.getElementById("statsEl").textContent = `${jsonResponse.imagesUploaded} image(s) uploaded with a total file size of ${(jsonResponse.imageSizeUploaded).toFixed(2)} MB.`
+                    document.getElementById("statsEl").textContent = `${jsonResponse.imagesUploaded} image(s) uploaded with a total file size of ${(jsonResponse.imageSizeUploaded).toFixed(2)} MB.`;
                 });
             } catch (err) {
                 document.getElementById("statusEl").textContent = "Something went wrong! Contact Mutayyab on discord: Mutyyab.#4275";
