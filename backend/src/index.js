@@ -85,7 +85,7 @@ app.get("/i/:code", (req, res) => {
     return res.end(file);
 });
 
-app.post("/truncate", (req, res) => {
+app.post("/truncate", async (req, res) => {
     const usersPassword = req.body.password;
     const password = process.env.password || "admin123";
 
