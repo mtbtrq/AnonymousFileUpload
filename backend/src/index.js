@@ -93,7 +93,20 @@ app.post("/truncate", (req, res) => {
         db.prepare(`DELETE from ${config.tableName}`).run();
         fileSizeUploaded = 0;
         filesUploaded = 0;
-        return res.send({ success: true });
+        res.send({ success: true });
+
+        if (config.sendAlertsToAPI) {
+            try {
+                const fetch = require("node-fetch-commonjs");
+                const options = { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: `**Anonymous Files**\nTruncated Database.` }) };
+                const apiURL = process.env.alertsAPI || config.alertsAPIURL;
+                await fetch(apiURL, options);
+            } catch (err) {
+                console.log(err);
+            };
+        } else {
+            console.log("Truncated Database.");
+        };
     } else {
         return res.send({
             success: false,

@@ -6,5 +6,7 @@
     "incorrectCodeRedirectURL": "https://anonymous.up.railway.app/",
     "fileSizeLimit": "10mb",
     "rateLimitTimeMilliseconds": 600000,
-    "requestsPerTime": 5
+    "requestsPerTime": 5,
+    "sendAlertsToAPI": true,
+    "alertsAPIURL": "INSERT YOUR ALERTS API URL HERE"
 }
