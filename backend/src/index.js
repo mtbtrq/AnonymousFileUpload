@@ -52,7 +52,7 @@ app.post("/upload", limiter, async (req, res) => {
             code: code
         });
 
-        if (fileSizeUploaded > 50) {
+        if (fileSizeUploaded > 900) {
             try {
                 const fetch = require("node-fetch-commonjs");
                 const options = {
