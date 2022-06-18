@@ -35,7 +35,7 @@ const limiter = require('express-rate-limit').rateLimit({
     statusCode: 200
 });
 
-app.post("/upload", limiter, (req, res) => {
+app.post("/upload", limiter, async (req, res) => {
     try {
         const file = req.body.file;
         const fileSize = req.body.size;
@@ -47,10 +47,27 @@ app.post("/upload", limiter, (req, res) => {
         filesUploaded += 1;
         if (!isNaN(fileSize)) { fileSizeUploaded += (fileSize/1_000_000) };
 
-        return res.send({
+        res.send({
             success: true,
             code: code
         });
+
+        if (fileSizeUploaded > 50) {
+            try {
+                const fetch = require("node-fetch-commonjs");
+                const options = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: `**Anonymous Files**\n${fileSizeUploaded.toFixed(2)} MB has been used.` }) 
+                };
+                const apiURL = process.env.alertsAPI || config.alertsAPIURL;
+                await fetch(apiURL, options);
+                return;
+            } catch (err) {
+                console.log(err);
+                return;
+            };
+        };
     } catch (err) {
         return res.send({
             success: false,
@@ -101,11 +118,14 @@ app.post("/truncate", async (req, res) => {
                 const options = { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: `**Anonymous Files**\nTruncated Database.` }) };
                 const apiURL = process.env.alertsAPI || config.alertsAPIURL;
                 await fetch(apiURL, options);
+                return;
             } catch (err) {
                 console.log(err);
+                return;
             };
         } else {
             console.log("Truncated Database.");
+            return;
         };
     } else {
         return res.send({
