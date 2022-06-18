@@ -6,23 +6,23 @@ const config = require("./config.json");
 const db = new require("better-sqlite3")(`${config["databaseName"]}.db`);
 
 const port = process.env.PORT || config.port;
-app.use(bodyParser.json({ limit: config.imageSizeLimit }));
+app.use(bodyParser.json({ limit: config.fileSizeLimit }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-let imagesUploaded = 0;
-let imageSizeUploaded = 0;
+let filesUploaded = 0;
+let fileSizeUploaded = 0;
 
 app.get("/", (req, res) => { return res.redirect(config.incorrectCodeRedirectURL) });
 app.get("/i", (req, res) => { return res.redirect(config.incorrectCodeRedirectURL) });
 
 app.get("/stats", (req, res) => {
     return res.send({
-        "imagesUploaded": imagesUploaded,
-        "imageSizeUploaded": imageSizeUploaded
+        "filesUploaded": filesUploaded,
+        "fileSizeUploaded": fileSizeUploaded
     });
 });
 
-db.prepare(`CREATE TABLE IF NOT EXISTS ${config.imagesTableName} (imagebase64Code text, code text)`).run();
+db.prepare(`CREATE TABLE IF NOT EXISTS ${config.tableName} (base64Code text, code text, fileName text)`).run();
 
 const limiter = require('express-rate-limit').rateLimit({
     windowMs: config.rateLimitTimeMilliseconds,
@@ -37,23 +37,20 @@ const limiter = require('express-rate-limit').rateLimit({
 
 app.post("/upload", limiter, (req, res) => {
     try {
-        const image = req.body.image;
+        const file = req.body.file;
         const fileSize = req.body.size;
-        const mimeType = req.body.mimeType;
+        const fileName = req.body.fileName;
+        const code = getCode();
 
-        if (mimeType == "data:image/jpeg;base64" || mimeType == "data:image/png;base64") {
-            const code = getCode();
+        db.prepare(`INSERT INTO ${config.tableName} VALUES (?, ?, ?)`).run(file, code, fileName);
 
-            db.prepare(`INSERT INTO ${config.imagesTableName} VALUES (?, ?)`).run(image, code);
-    
-            imagesUploaded += 1;
-            if (!isNaN(fileSize)) { imageSizeUploaded += (fileSize/1_000_000) }
-    
-            return res.send({
-                success: true,
-                code: code
-            });
-        } else { return res.send({ success: false, cause: "Please only upload JPEG or PNG files!" }) }
+        filesUploaded += 1;
+        if (!isNaN(fileSize)) { fileSizeUploaded += (fileSize/1_000_000) };
+
+        return res.send({
+            success: true,
+            code: code
+        });
     } catch (err) {
         return res.send({
             success: false,
@@ -74,19 +71,18 @@ function getCode() {
 app.get("/i/:code", (req, res) => {
     const code = (req.params.code).toLowerCase();
     
-    const imagesData = db.prepare(`SELECT * FROM ${config.imagesTableName} WHERE code = ?`).all(code);
+    const filesData = db.prepare(`SELECT * FROM ${config.tableName} WHERE code = ?`).all(code);
     
-    if (!(imagesData.length > 0)) { return res.redirect(config.incorrectCodeRedirectURL) };
+    if (!(filesData.length > 0)) { return res.redirect(config.incorrectCodeRedirectURL) };
 
-    const imageCode = imagesData[0]["imagebase64Code"];
+    const fileCode = filesData[0]["base64Code"];
     
-    const img = Buffer.from(imageCode, 'base64');
+    const file = Buffer.from(fileCode, 'base64');
 
-    res.writeHead(200, {
-        'Content-Type': 'image/png',
-        'Content-Length': img.length
+    res.header({
+        "Content-Disposition": `attachment; filename="${filesData[0]["fileName"]}`
     });
-    return res.end(img);
+    return res.end(file);
 });
 
 app.post("/truncate", (req, res) => {
@@ -94,9 +90,9 @@ app.post("/truncate", (req, res) => {
     const password = process.env.password || "admin123";
 
     if (usersPassword === password) {
-        db.prepare(`DELETE from ${config.imagesTableName}`).run();
-        imageSizeUploaded = 0;
-        imagesUploaded = 0;
+        db.prepare(`DELETE from ${config.tableName}`).run();
+        fileSizeUploaded = 0;
+        filesUploaded = 0;
         return res.send({ success: true });
     } else {
         return res.send({

@@ -1,10 +1,10 @@
 {
     "port": 5000,
     "databaseName": "database",
-    "imagesTableName": "images",
+    "tableName": "images",
     "codeLength": 5,
     "incorrectCodeRedirectURL": "https://anonymous.up.railway.app/",
-    "imageSizeLimit": "5mb",
+    "fileSizeLimit": "10mb",
     "rateLimitTimeMilliseconds": 600000,
-    "requestsPerTime": 10
+    "requestsPerTime": 5
 }
