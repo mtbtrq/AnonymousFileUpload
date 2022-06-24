@@ -28,7 +28,7 @@ function App() {
             const file = document.getElementById("fileEl")['files'][0];
             fileSize = file.size;
             fileName = file.name;
-            document.getElementById("statusEl").textContent = fileName
+            document.getElementById("statusEl").textContent = `${fileName} (${fileSize})`;
             
             if (fileSize >= 10000000) {
                 return document.getElementById("instructionsEl").textContent = "Please select a file that is lighter than 10 MB.";
@@ -120,7 +120,7 @@ function App() {
             <p className="hidden" id="yourPreviouslyUploadedFilesText">Your previously uploaded files:</p>
             <ul id="linksUlEl"></ul>
 
-            <p id="instructionsEl">Only files (below 5 MB) are allowed!</p>
+            <p id="instructionsEl">Only files (below 10 MB) are allowed!</p>
             <p id="statusEl"></p>
 
             <br />
