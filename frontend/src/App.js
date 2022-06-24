@@ -26,11 +26,11 @@ function App() {
         let fileName;
         const handleChange = () => {
             const file = document.getElementById("fileEl")['files'][0];
-            fileSize = file.size;
+            fileSize = file.size/1_000_000;
             fileName = file.name;
-            document.getElementById("statusEl").textContent = `${fileName} (${fileSize})`;
+            document.getElementById("statusEl").textContent = `${fileName} (${fileSize} MB)`;
             
-            if (fileSize >= 10000000) {
+            if (fileSize >= 10) {
                 return document.getElementById("instructionsEl").textContent = "Please select a file that is lighter than 10 MB.";
             };
             

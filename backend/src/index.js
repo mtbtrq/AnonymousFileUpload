@@ -45,7 +45,7 @@ app.post("/upload", limiter, async (req, res) => {
         db.prepare(`INSERT INTO ${config.tableName} VALUES (?, ?, ?)`).run(file, code, fileName);
 
         filesUploaded += 1;
-        if (!isNaN(fileSize)) { fileSizeUploaded += (fileSize/1_000_000) };
+        if (!isNaN(fileSize)) { fileSizeUploaded += fileSize };
 
         res.send({
             success: true,
