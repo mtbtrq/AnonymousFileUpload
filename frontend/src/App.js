@@ -31,7 +31,7 @@ function App() {
             document.getElementById("statusEl").textContent = `${fileName} (${fileSize.toFixed(3)} MB)`;
             
             if (fileSize >= 10) {
-                return document.getElementById("instructionsEl").textContent = "Please select a file that is lighter than 10 MB.";
+                document.getElementById("instructionsEl").textContent = "Please select a file that is lighter than 10 MB.";
             };
             
             var reader = new FileReader();
