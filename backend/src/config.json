@@ -8,5 +8,5 @@
     "rateLimitTimeMilliseconds": 600000,
     "requestsPerTime": 5,
     "sendAlertsToAPI": true,
-    "alertsAPIURL": "INSERT YOUR ALERTS API URL HERE "
+    "alertsAPIURL": "INSERT YOUR ALERTS API URL HERE"
 }
