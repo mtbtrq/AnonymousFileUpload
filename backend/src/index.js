@@ -102,6 +102,14 @@ app.get("/i/:code", (req, res) => {
     return res.end(file);
 });
 
+app.post("/checkcode", (req, res) => {
+    const code = (req.body.code).toLowerCase().trim();
+
+    const filesData = db.prepare(`SELECT * FROM ${config.tableName} WHERE code = ?`).all(code);
+
+    if (!(filesData.length > 0)) { return res.json({ success: false }) } else { return res.json({ success: true }) };
+});
+
 app.post("/truncate", async (req, res) => {
     const usersPassword = req.body.password;
     const password = process.env.password || "admin123";

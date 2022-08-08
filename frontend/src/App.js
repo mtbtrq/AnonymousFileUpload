@@ -3,19 +3,33 @@ const config = require("./config.json");
 
 function App() {
     useEffect(() => {
-        const setPreviousURLs = () => {
-            if (localStorage.getItem("urls")) {
+        const setPreviousURLs = async () => {
+            if (localStorage.getItem("codes")) {
                 document.getElementById("yourPreviouslyUploadedFilesText").classList.remove("hidden");
-                const previousURLs = JSON.parse(localStorage.getItem("urls"));
-                if (previousURLs.length > 5) {
-                    previousURLs.splice(0, previousURLs.length - 5)
-                    localStorage.setItem("urls", JSON.stringify(previousURLs))
+                const previousCodes = JSON.parse(localStorage.getItem("codes"));
+                if (previousCodes.length > 5) {
+                    previousCodes.splice(0, previousCodes.length - 5)
+                    localStorage.setItem("codes", JSON.stringify(previousCodes))
                 };
                 const previousLinkUlEl = document.getElementById("linksUlEl");
-                for (let url of previousURLs) {
-                    const newLi = document.createElement("li");
-                    newLi.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
-                    previousLinkUlEl.appendChild(newLi);
+                for (let code of previousCodes) {
+                    const options = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ code: code })
+                    };
+                    const response = await (await fetch(`${config.apiURL}/checkcode`, options)).json();
+                    if (response.success) {
+                        const url = `${config.apiURL}/i/${code}`
+                        const newLi = document.createElement("li");
+                        newLi.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
+                        previousLinkUlEl.appendChild(newLi);
+                    } else {
+                        const newCodesArray = previousCodes.filter(codes => { return codes !== code })
+                        localStorage.setItem("codes", JSON.stringify(newCodesArray))
+                    };
                 };
             };
         };
@@ -29,7 +43,7 @@ function App() {
             fileSize = file.size/1_000_000;
             fileName = file.name;
             document.getElementById("statusEl").textContent = `${fileName} (${fileSize.toFixed(3)} MB)`;
-            
+
             if (fileSize >= 10) {
                 return document.getElementById("instructionsEl").textContent = "Please select a file that is lighter than 10 MB.";
             };
@@ -68,12 +82,12 @@ function App() {
                                 document.getElementById("instructionsEl").innerHTML = `Uploaded! Download URL: <a href="${url}" target="_blank">${url}</a>`;
                                 setStats();
     
-                                if (!(localStorage.getItem("urls"))) {
-                                    localStorage.setItem("urls", JSON.stringify([url]));
+                                if (!(localStorage.getItem("codes"))) {
+                                    localStorage.setItem("codes", JSON.stringify([jsonResponse.code]));
                                 } else {
-                                    const previousURLs = JSON.parse(localStorage.getItem("urls"));
-                                    previousURLs.push(url);
-                                    localStorage.setItem("urls", JSON.stringify(previousURLs));
+                                    const previousURLs = JSON.parse(localStorage.getItem("codes"));
+                                    previousURLs.push(jsonResponse.code);
+                                    localStorage.setItem("codes", JSON.stringify(previousURLs));
                                 };
     
                                 const previousLinkUlEl = document.getElementById("linksUlEl");
@@ -88,7 +102,7 @@ function App() {
                     });
                 } catch (err) {
                     console.log(err);
-                    statusEl.textContent = "Something went wrong!";
+                    statusEl.textContent = "Something went wrong! Check the console for more information.";
                 };
 
                 fileStringUnformatted = "";
@@ -121,7 +135,7 @@ function App() {
             <p className="hidden" id="yourPreviouslyUploadedFilesText">Your previously uploaded files:</p>
             <ul id="linksUlEl"></ul>
 
-            <p id="instructionsEl">Only files (below 10 MB) are allowed!</p>
+            <p id="instructionsEl">Only files below 10 MB are allowed!</p>
             <p id="statusEl"></p>
 
             <br />
