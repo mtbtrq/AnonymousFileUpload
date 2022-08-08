@@ -107,7 +107,7 @@ app.post("/truncate", async (req, res) => {
     const password = process.env.password || "admin123";
 
     if (usersPassword === password) {
-        db.prepare(`DELETE from ${config.tableName}`).run();
+        db.prepare(`DELETE from ${config.tableName} `).run();
         fileSizeUploaded = 0;
         filesUploaded = 0;
         res.send({ success: true });
