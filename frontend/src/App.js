@@ -61,6 +61,7 @@ function App() {
                     await fetch(`${config.apiURL}/upload`, options).then(async response => {
                         if (!(response.status === 413)) {
                             const jsonResponse = await response.json();
+                            if (!(jsonResponse.success) && jsonResponse.cause === "You're sending too many requests. Please try again in a while.") return statusEl.textContent = "You're sending too many requests. Please try again in a while."
                             if (jsonResponse.success) {
                                 const url = `${config.apiURL}/i/${jsonResponse.code}`;
                                 statusEl.textContent = "";
